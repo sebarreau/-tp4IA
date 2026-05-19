@@ -1,6 +1,9 @@
 package ht.mbds.BarreauSachyEdvalle;
 
-
+import dev.langchain4j.rag.DefaultRetrievalAugmentor;
+import dev.langchain4j.rag.RetrievalAugmentor;
+import dev.langchain4j.rag.query.transformer.CompressingQueryTransformer;
+import dev.langchain4j.rag.query.transformer.QueryTransformer;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
@@ -79,10 +82,21 @@ public class RagNaif {
                         .minScore(0.5)
                         .build();
 
+        QueryTransformer queryTransformer =
+                CompressingQueryTransformer.builder()
+                        .chatModel(model)
+                        .build();
+
+        RetrievalAugmentor retrievalAugmentor =
+                DefaultRetrievalAugmentor.builder()
+                        .queryTransformer(queryTransformer)
+                        .contentRetriever(contentRetriever)
+                        .build();
+
         Assistant assistant = AiServices.builder(Assistant.class)
                 .chatModel(model)
                 .chatMemory(MessageWindowChatMemory.withMaxMessages(10))
-                .contentRetriever(contentRetriever)
+                .retrievalAugmentor(retrievalAugmentor)
                 .build();
 
 
