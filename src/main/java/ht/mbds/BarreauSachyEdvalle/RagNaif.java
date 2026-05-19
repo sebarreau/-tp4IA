@@ -1,7 +1,10 @@
 package ht.mbds.BarreauSachyEdvalle;
 
 
-
+import dev.langchain4j.memory.chat.MessageWindowChatMemory;
+import dev.langchain4j.rag.content.retriever.ContentRetriever;
+import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
+import dev.langchain4j.service.AiServices;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.DocumentSplitter;
 import dev.langchain4j.data.document.loader.ClassPathDocumentLoader;
@@ -24,8 +27,8 @@ public class RagNaif {
     public static void main(String[] args) {
 
         ChatModel model = GoogleAiGeminiChatModel.builder()
-                .apiKey(System.getenv("GEMINI_API_KEY"))
-                .modelName("gemini-1.5-flash")
+                .apiKey(System.getenv("GEMINI_KEY"))
+                .modelName("gemini-2.5-flash")
                 .build();
 
 
@@ -51,5 +54,24 @@ public class RagNaif {
         System.out.println("Phase 1 terminée");
         System.out.println("Nombre de segments : " + segments.size());
         System.out.println("Nombre d'embeddings : " + embeddings.size());
+
+        ContentRetriever contentRetriever =
+                EmbeddingStoreContentRetriever.builder()
+                        .embeddingStore(embeddingStore)
+                        .embeddingModel(embeddingModel)
+                        .maxResults(2)
+                        .minScore(0.5)
+                        .build();
+
+        Assistant assistant = AiServices.builder(Assistant.class)
+                .chatModel(model)
+                .chatMemory(MessageWindowChatMemory.withMaxMessages(10))
+                .contentRetriever(contentRetriever)
+                .build();
+
+        String responseLm =
+                assistant.chat("Quelle est la signification du RAG ?");
+
+        System.out.println(responseLm);
     }
 }
