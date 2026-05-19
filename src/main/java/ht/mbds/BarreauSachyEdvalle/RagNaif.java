@@ -20,16 +20,31 @@ import dev.langchain4j.model.googleai.GoogleAiGeminiChatModel;
 import dev.langchain4j.model.output.Response;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.util.List;
 
 public class RagNaif {
+    private static void configureLogger() {
 
+        Logger packageLogger = Logger.getLogger("dev.langchain4j");
+
+        packageLogger.setLevel(Level.FINE);
+
+        ConsoleHandler handler = new ConsoleHandler();
+
+        handler.setLevel(Level.FINE);
+
+        packageLogger.addHandler(handler);
+    }
     public static void main(String[] args) {
-
+        configureLogger();
         ChatModel model = GoogleAiGeminiChatModel.builder()
                 .apiKey(System.getenv("GEMINI_KEY"))
-                .modelName("gemini-2.5-flash")
+                .modelName("gemini-2.5-flash-lite")
+                .logRequestsAndResponses(true)
                 .build();
 
 
