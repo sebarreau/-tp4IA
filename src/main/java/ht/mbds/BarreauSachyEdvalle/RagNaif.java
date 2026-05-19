@@ -5,6 +5,7 @@ import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.service.AiServices;
+import java.util.Scanner;
 import dev.langchain4j.data.document.Document;
 import dev.langchain4j.data.document.DocumentSplitter;
 import dev.langchain4j.data.document.loader.ClassPathDocumentLoader;
@@ -69,9 +70,31 @@ public class RagNaif {
                 .contentRetriever(contentRetriever)
                 .build();
 
-        String responseLm =
-                assistant.chat("Quelle est la signification du RAG ?");
 
-        System.out.println(responseLm);
+            try (Scanner scanner = new Scanner(System.in)) {
+
+                while (true) {
+
+                    System.out.println("==================================================");
+                    System.out.println("Posez votre question : ");
+
+                    String question = scanner.nextLine();
+
+                    if (question.isBlank()) {
+                        continue;
+                    }
+
+                    System.out.println("==================================================");
+
+                    if ("fin".equalsIgnoreCase(question)) {
+                        break;
+                    }
+
+                    String reponse = assistant.chat(question);
+
+                    System.out.println("Assistant : " + reponse);
+                    System.out.println("==================================================");
+                }
+            }
+        }
     }
-}
