@@ -76,12 +76,33 @@ public class Test5 {
                         .webSearchEngine(webSearchEngine)
                         .build();
 
-        QueryRouter queryRouter =
-                new DefaultQueryRouter(
-                        pdfRetriever,
-                        webRetriever
-                );
+//        QueryRouter queryRouter =
+//                new DefaultQueryRouter(
+//                        pdfRetriever,
+//                        webRetriever
+//                );
 
+        QueryRouter queryRouter = query -> {
+
+            String prompt = """
+            Est-ce que la requête suivante porte sur l'IA, le RAG ou le fine-tuning ?
+            Réponds seulement par oui, non ou peut-être.
+
+            Requête : %s
+            """.formatted(query.text());
+
+            String decision = model.chat(prompt);
+
+            System.out.println("Décision PDF : " + decision);
+
+            if (decision.toLowerCase().contains("oui")
+                    || decision.toLowerCase().contains("peut-être")) {
+
+                return List.of(pdfRetriever, webRetriever);
+            }
+
+            return List.of(webRetriever);
+        };
         RetrievalAugmentor retrievalAugmentor =
                 DefaultRetrievalAugmentor.builder()
                         .queryRouter(queryRouter)

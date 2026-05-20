@@ -96,7 +96,7 @@ public class TestRoutage {
 
             while (true) {
 
-                System.out.println("==================================================");
+                System.out.println("==========================");
                 System.out.println("Posez votre question : ");
 
                 String question = scanner.nextLine();
@@ -109,13 +109,12 @@ public class TestRoutage {
                     break;
                 }
 
-                System.out.println("==================================================");
+                System.out.println("===================");
 
                 String reponse = assistant.chat(question);
 
                 System.out.println("Assistant : " + reponse);
 
-                System.out.println("==================================================");
             }
         }
     }
